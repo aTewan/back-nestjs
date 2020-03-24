@@ -1,4 +1,4 @@
-import { Injectable, Get, Post, Body } from '@nestjs/common';
+import { Injectable, Get, Post, Body, NotFoundException } from '@nestjs/common';
 import { User, UserGender } from './user.model'
 
 import { v1 as uuidv1 } from 'uuid'
@@ -13,11 +13,18 @@ export class UsersService {
   }
 
   getUserById(id: string): User {
-    return this.users.find(user => user.id === id);
+    const userFound = this.users.find(user => user.id === id);
+
+    if (!userFound) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return userFound;
   }
 
   deleteUserById(id: string): void {
-    this.users = this.users.filter(user => user.id !== id);
+    const userFound = this.getUserById(id)
+    this.users = this.users.filter(user => user.id !== userFound.id);
   }
 
   createUser(createUserDto: CreateUserDto): User {
