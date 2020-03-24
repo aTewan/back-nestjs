@@ -12,6 +12,10 @@ export class UsersService {
     return this.users;
   }
 
+  getUserById(id: string): User {
+    return this.users.find(user => user.id === id);
+  }
+
   createUser(createUserDto: CreateUserDto): User {
     const { firstname, lastname, email, gender } = createUserDto;
     const user: User = {
