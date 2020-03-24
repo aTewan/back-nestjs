@@ -2,7 +2,9 @@ import { Controller, Get, Post, Body, Param, Delete, UsePipes, ValidationPipe } 
 import { UsersService } from './users.service';
 import { User, UserGender } from './user.model'
 import { CreateUserDto } from './dto/create-user-dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private usersServices: UsersService) {}
