@@ -1,42 +1,36 @@
-import { Injectable, Get, Post, Body, NotFoundException } from '@nestjs/common';
+import { Injectable, Get, Post, Body, NotFoundException, Inject } from '@nestjs/common';
 import { User, UserGender } from './user.model'
 
 import { v1 as uuidv1 } from 'uuid'
 import { CreateUserDto } from './dto/create-user-dto';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [];
+  constructor(@Inject('USER_MODEL') private userModel: Model<User>){}
 
-  getAllUsers(): User[] {
-    return this.users;
+  async getAllUsers(): Promise<User[]> {
+    return await this.userModel.find().exec();
   }
+  
+  async getUserById(id: string): Promise<User> {
+    const userFound = await this.userModel.findById(id);
 
-  getUserById(id: string): User {
-    const userFound = this.users.find(user => user.id === id);
-
-    if (!userFound) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+    if(!userFound) {
+      throw new NotFoundException();
     }
 
     return userFound;
   }
 
-  deleteUserById(id: string): void {
-    const userFound = this.getUserById(id)
-    this.users = this.users.filter(user => user.id !== userFound.id);
+  async deleteUserById(id: string): Promise<User> {
+    await this.getUserById(id)
+    const userDeleted = await this.userModel.findByIdAndRemove(id)
+    return userDeleted;
   }
-
-  createUser(createUserDto: CreateUserDto): User {
-    const { firstname, lastname, email, gender } = createUserDto;
-    const user: User = {
-      id: uuidv1(),
-      firstname: firstname,
-      lastname: lastname,
-      email: email,
-      gender: gender
-    };
-    this.users.push(user);
-    return user;
+  
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    const userCreated = new this.userModel(createUserDto)
+    return await userCreated.save();
   }
 }
