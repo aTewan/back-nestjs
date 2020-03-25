@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Param, Delete, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ApiTags, ApiCreatedResponse, ApiNotFoundResponse, ApiAcceptedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { User, UserGender } from './user.model'
 import { CreateUserDto } from './dto/create-user-dto';
-import { ApiTags, ApiCreatedResponse, ApiNotFoundResponse, ApiAcceptedResponse, ApiOkResponse } from '@nestjs/swagger';
 
 @ApiTags('users')
 @Controller('users')
@@ -11,7 +11,7 @@ export class UsersController {
 
   @Get()
   @ApiOkResponse({description: "Appel à la base de donnée réussie", type: [User]})
-  async getAllUsers(): Promise<User[]> {
+  async getAllUsers() {
     return await this.usersServices.getAllUsers();
   }
   
